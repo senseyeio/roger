@@ -46,12 +46,6 @@ func (s *session) readNBytes(bytes int) []byte {
 	return ret
 }
 
-func (s *session) skipNBytes(bytes int) {
-	for v := 0; v < bytes; v++ {
-		s.readWriter.ReadByte()
-	}
-}
-
 func (s *session) toCharset(str string) []byte {
 	return []byte(str)
 }
@@ -118,7 +112,7 @@ func (s *session) sendCommand(cmd string) *Packet {
 
 	rep := binary.LittleEndian.Uint32(s.readNBytes(4))
 	r1 := binary.LittleEndian.Uint32(s.readNBytes(4))
-	s.skipNBytes(8)
+	s.readNBytes(8)
 
 	if r1 <= 0 {
 		return nil
