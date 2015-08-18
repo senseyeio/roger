@@ -1,6 +1,6 @@
 package sexp
 
-func parseArrayString(buf []byte, offset int) (interface{}, error) {
+func parseStringArray(buf []byte, offset int) (interface{}, error) {
 	length := len(buf)
 	noStrings := 0
 	for ct := offset; ct < length; ct++ {
@@ -29,6 +29,9 @@ func parseArrayString(buf []byte, offset int) (interface{}, error) {
 			startOfString = offset + 1
 		}
 		offset = offset + 1
+	}
+	if len(stringArr) == 1 {
+		return stringArr[0], nil
 	}
 	return stringArr, nil
 }

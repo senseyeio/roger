@@ -18,7 +18,11 @@ type gore struct {
 	password string
 }
 
-func NewRClient(host string, port int64, user, password string) (RClient, error) {
+func NewRClient(host string, port int64) (RClient, error) {
+	return NewRClientWithAuth(host, port, "", "")
+}
+
+func NewRClientWithAuth(host string, port int64, user, password string) (RClient, error) {
 	addr, err := net.ResolveTCPAddr("tcp", host+":"+strconv.FormatInt(port, 10))
 	if err != nil {
 		return nil, err
@@ -34,7 +38,7 @@ func NewRClient(host string, port int64, user, password string) (RClient, error)
 func (gore *gore) EvaluateSync(command string) *Packet {
 	sess, err := newSession(gore)
 	if err != nil {
-		return NewErrorPacket(err)
+		return newErrorPacket(err)
 	}
 	packet := sess.sendCommand(command + "\n")
 	sess.close()

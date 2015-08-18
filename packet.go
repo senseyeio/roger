@@ -13,14 +13,14 @@ type Packet struct {
 	err     error
 }
 
-func NewPacket(cmd int, content []byte) *Packet {
+func newPacket(cmd int, content []byte) *Packet {
 	return &Packet{
 		cmd:     cmd,
 		content: content,
 	}
 }
 
-func NewErrorPacket(err error) *Packet {
+func newErrorPacket(err error) *Packet {
 	return &Packet{
 		err: err,
 	}
@@ -45,7 +45,7 @@ func (p *Packet) GetResultObject() (interface{}, error) {
 	if p.IsError() {
 		return nil, p.GetError()
 	}
-	isSexp := p.content[0] == byte(DT_SEXP)
+	isSexp := p.content[0] == byte(dtSexp)
 	if !isSexp {
 		return nil, errors.New("Expected SEXP response")
 	}

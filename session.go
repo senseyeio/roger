@@ -62,11 +62,11 @@ func (s *session) handshake() {
 		attrString := string(attr)
 		if attrString == "ARpt" && s.authReq == false {
 			s.authReq = true
-			s.authType = AT_plain
+			s.authType = atPlain
 		}
 		if attrString == "ARuc" {
 			s.authReq = true
-			s.authType = AT_crypt
+			s.authType = atCrypt
 		}
 		if attrString[0] == 'K' {
 			s.key = attrString[1:3]
@@ -75,7 +75,7 @@ func (s *session) handshake() {
 	s.connected = true
 }
 
-func (s *session) setHdr(valueType typ, valueLength int, buf []byte) {
+func (s *session) setHdr(valueType dataType, valueLength int, buf []byte) {
 	buf[0] = byte(valueType)
 	buf[1] = byte(valueLength & 255)
 	buf[2] = byte((valueLength & 0xff00) >> 8)
@@ -93,7 +93,7 @@ func (s *session) prepareStringCommand(cmd string) []byte {
 	for i := 0; i < len(rawCmdBytes); i++ {
 		cmdBytes[4+i] = rawCmdBytes[i]
 	}
-	s.setHdr(DT_STRING, requiredLength, cmdBytes)
+	s.setHdr(dtString, requiredLength, cmdBytes)
 	return cmdBytes
 }
 
@@ -101,7 +101,7 @@ func (s *session) sendCommand(cmd string) *Packet {
 	cmdBytes := s.prepareStringCommand(cmd)
 	buf := new(bytes.Buffer)
 	//command
-	binary.Write(buf, binary.LittleEndian, int32(CMD_eval))
+	binary.Write(buf, binary.LittleEndian, int32(cmdEval))
 	//length of message (bits 0-31)
 	binary.Write(buf, binary.LittleEndian, int32(len(cmdBytes)))
 	//offset of message part
@@ -118,9 +118,9 @@ func (s *session) sendCommand(cmd string) *Packet {
 	s.readNBytes(8)
 
 	if r1 <= 0 {
-		return NewPacket(int(rep), nil)
+		return newPacket(int(rep), nil)
 	}
 
 	results := s.readNBytes(int(r1))
-	return NewPacket(int(rep), results)
+	return newPacket(int(rep), results)
 }
