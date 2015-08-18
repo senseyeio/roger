@@ -1,4 +1,4 @@
-package gore
+package roger
 
 import (
 	"io"
@@ -12,7 +12,7 @@ type RClient interface {
 	getReadWriteCloser() (io.ReadWriteCloser, error)
 }
 
-type gore struct {
+type roger struct {
 	address  *net.TCPAddr
 	user     string
 	password string
@@ -28,15 +28,15 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 		return nil, err
 	}
 
-	return &gore{
+	return &roger{
 		address:  addr,
 		user:     user,
 		password: password,
 	}, nil
 }
 
-func (gore *gore) EvaluateSync(command string) *Packet {
-	sess, err := newSession(gore)
+func (r *roger) EvaluateSync(command string) *Packet {
+	sess, err := newSession(r)
 	if err != nil {
 		return newErrorPacket(err)
 	}
@@ -45,17 +45,17 @@ func (gore *gore) EvaluateSync(command string) *Packet {
 	return packet
 }
 
-func (gore *gore) Evaluate(command string) <-chan *Packet {
+func (r *roger) Evaluate(command string) <-chan *Packet {
 	out := make(chan *Packet)
 	go func() {
-		out <- gore.EvaluateSync(command)
+		out <- r.EvaluateSync(command)
 		close(out)
 	}()
 	return out
 }
 
-func (gore *gore) getReadWriteCloser() (io.ReadWriteCloser, error) {
-	connection, err := net.DialTCP("tcp", nil, gore.address)
+func (r *roger) getReadWriteCloser() (io.ReadWriteCloser, error) {
+	connection, err := net.DialTCP("tcp", nil, r.address)
 	if err != nil {
 		return nil, err
 	}
