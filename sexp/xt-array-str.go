@@ -11,21 +11,21 @@ func parseArrayString(buf []byte, offset int) (interface{}, error) {
 	stringArr := make([]string, noStrings, noStrings)
 
 	startOfString := offset
-	strIdx := 0
-	for offset < length {
+	idx := 0
+	for offset < length && idx < noStrings {
 		if buf[offset] == 0 {
-			stringLength := offset - startOfString
+			endOfString := startOfString + (offset - startOfString)
 			if buf[startOfString] == 0xff {
 				if buf[startOfString+1] == 0 {
-					stringArr[strIdx] = ""
+					stringArr[idx] = ""
 				} else {
-					stringArr[strIdx] = string(buf[startOfString+1 : startOfString+(stringLength-1)])
+					stringArr[idx] = string(buf[startOfString+1 : endOfString-1])
 				}
 			} else {
-				stringArr[strIdx] = string(buf[startOfString : startOfString+(stringLength)])
+				stringArr[idx] = string(buf[startOfString:endOfString])
 			}
 
-			strIdx = strIdx + 1
+			idx = idx + 1
 			startOfString = offset + 1
 		}
 		offset = offset + 1
