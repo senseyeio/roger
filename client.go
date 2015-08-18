@@ -34,7 +34,7 @@ func NewRClient(host string, port int64, user, password string) (RClient, error)
 func (gore *gore) EvaluateSync(command string) *Packet {
 	sess, err := newSession(gore)
 	if err != nil {
-		return nil
+		return NewErrorPacket(err)
 	}
 	packet := sess.sendCommand(command + "\n")
 	sess.close()

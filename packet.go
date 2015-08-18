@@ -2,6 +2,7 @@ package gore
 
 import (
 	"errors"
+	"strconv"
 
 	"github.com/dareid/gore/sexp"
 )
@@ -9,6 +10,7 @@ import (
 type Packet struct {
 	cmd     int
 	content []byte
+	err     error
 }
 
 func NewPacket(cmd int, content []byte) *Packet {
@@ -18,19 +20,31 @@ func NewPacket(cmd int, content []byte) *Packet {
 	}
 }
 
-func (p *Packet) IsOK() bool {
-	return p.cmd&15 == 1
+func NewErrorPacket(err error) *Packet {
+	return &Packet{
+		err: err,
+	}
 }
 
 func (p *Packet) IsError() bool {
-	return p.cmd&15 == 2
+	return p.err != nil || p.cmd&15 == 2
 }
 
-func (p *Packet) GetStatusCode() int {
+func (p *Packet) getStatusCode() int {
 	return p.cmd >> 24 & 127
 }
 
+func (p *Packet) GetError() error {
+	if p.err != nil {
+		return p.err
+	}
+	return errors.New("Command error with status: " + strconv.Itoa(p.getStatusCode()))
+}
+
 func (p *Packet) GetResultObject() (interface{}, error) {
+	if p.IsError() {
+		return nil, p.GetError()
+	}
 	isSexp := p.content[0] == byte(DT_SEXP)
 	if !isSexp {
 		return nil, errors.New("Expected SEXP response")

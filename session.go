@@ -20,7 +20,10 @@ type session struct {
 }
 
 func newSession(client RClient) (*session, error) {
-	readWriteCloser, _ := client.getReadWriteCloser()
+	readWriteCloser, err := client.getReadWriteCloser()
+	if err != nil {
+		return nil, err
+	}
 	buffRead := bufio.NewReader(readWriteCloser)
 	buffWrite := bufio.NewWriter(readWriteCloser)
 	sess := &session{
@@ -115,7 +118,7 @@ func (s *session) sendCommand(cmd string) *Packet {
 	s.readNBytes(8)
 
 	if r1 <= 0 {
-		return nil
+		return NewPacket(int(rep), nil)
 	}
 
 	results := s.readNBytes(int(r1))
