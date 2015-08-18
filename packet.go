@@ -1,6 +1,10 @@
 package gore
 
-import "errors"
+import (
+	"errors"
+
+	"github.com/dareid/gore/sexp"
+)
 
 type Packet struct {
 	cmd     int
@@ -31,5 +35,5 @@ func (p *Packet) GetResultObject() (interface{}, error) {
 	if !isSexp {
 		return nil, errors.New("Expected SEXP response")
 	}
-	return parseSEXP(p.content[4:len(p.content)], 0)
+	return sexp.Parse(p.content[4:len(p.content)], 0)
 }

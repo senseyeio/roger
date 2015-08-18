@@ -19,9 +19,3 @@ const (
 	DT_STRING typ = 4
 	DT_SEXP   typ = 10
 )
-
-type expression int
-
-const (
-	XT_ARRAY_DOUBLE expression = 33
-)
