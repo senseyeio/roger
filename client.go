@@ -6,6 +6,7 @@ import (
 	"strconv"
 )
 
+// RClient is the main Roger interface allowing interaction with R.
 type RClient interface {
 	Evaluate(command string) <-chan *Packet
 	EvaluateSync(command string) *Packet
@@ -18,11 +19,12 @@ type roger struct {
 	password string
 }
 
+// NewRClient creates a RClient which will run commands on the RServe server located at the provided host and port
 func NewRClient(host string, port int64) (RClient, error) {
-	return NewRClientWithAuth(host, port, "", "")
+	return newRClientWithAuth(host, port, "", "")
 }
 
-func NewRClientWithAuth(host string, port int64, user, password string) (RClient, error) {
+func newRClientWithAuth(host string, port int64, user, password string) (RClient, error) {
 	addr, err := net.ResolveTCPAddr("tcp", host+":"+strconv.FormatInt(port, 10))
 	if err != nil {
 		return nil, err
@@ -35,6 +37,7 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 	}, nil
 }
 
+// EvaluateSync evaluates a R command synchronously.
 func (r *roger) EvaluateSync(command string) *Packet {
 	sess, err := newSession(r)
 	if err != nil {
@@ -45,6 +48,7 @@ func (r *roger) EvaluateSync(command string) *Packet {
 	return packet
 }
 
+// Evaluate evaluates a R command asynchronously. The returned channel will resolve to a Packet once the command has completed.
 func (r *roger) Evaluate(command string) <-chan *Packet {
 	out := make(chan *Packet)
 	go func() {

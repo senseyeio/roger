@@ -7,6 +7,8 @@ import (
 	"github.com/senseyeio/roger/sexp"
 )
 
+// Packet is the object returned from a R command
+// It contains either a byte array or an error
 type Packet struct {
 	cmd     int
 	content []byte
@@ -26,6 +28,7 @@ func newErrorPacket(err error) *Packet {
 	}
 }
 
+// IsError returns a boolean defining whether the Packet contains an error.
 func (p *Packet) IsError() bool {
 	return p.err != nil || p.cmd&15 == 2
 }
@@ -34,13 +37,20 @@ func (p *Packet) getStatusCode() int {
 	return p.cmd >> 24 & 127
 }
 
+// GetError returns an error if the Packet contains an error. If not it returns nil.
 func (p *Packet) GetError() error {
+	if p.IsError() == false {
+		return nil
+	}
 	if p.err != nil {
 		return p.err
 	}
 	return errors.New("Command error with status: " + strconv.Itoa(p.getStatusCode()))
 }
 
+// GetResultObject will parse the packet's contents, returning a go interface{}.
+// If the Packet contains an error this will be returned.
+// If conversion fails, an error will be returned.
 func (p *Packet) GetResultObject() (interface{}, error) {
 	if p.IsError() {
 		return nil, p.GetError()

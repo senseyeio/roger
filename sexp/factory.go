@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// Parse converts a byte array containing R SEXP to a golang object.
+// This can be converted to native golang types.
 func Parse(buf []byte, offset int) (interface{}, error) {
 	xt := expressionType(buf[offset] & 63)
 	offset = offset + 4
