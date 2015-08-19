@@ -20,7 +20,7 @@ import (
 )
 
 func main() {
-	rClient, err := gore.NewRClient("127.0.0.1", 6311)
+	rClient, err := roger.NewRClient("127.0.0.1", 6311)
 	if err != nil {
 		fmt.Println("Failed to connect")
         return
