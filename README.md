@@ -16,7 +16,7 @@ package main
 import (
 	"fmt"
 
-	"github.com/dareid/gore"
+	"github.com/senseyeio/roger"
 )
 
 func main() {
