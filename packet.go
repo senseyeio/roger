@@ -4,7 +4,7 @@ import (
 	"errors"
 	"strconv"
 
-	"github.com/dareid/gore/sexp"
+	"github.com/senseyeio/roger/sexp"
 )
 
 type Packet struct {
