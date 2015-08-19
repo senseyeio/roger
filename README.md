@@ -1,5 +1,7 @@
 # Roger
 
+[![Join the chat at https://gitter.im/senseyeio/roger](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/senseyeio/roger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Roger is a Go [RServe](http://www.rforge.net/Rserve/) client, allowing the capabilities of [R](http://www.r-project.org/) to be used from Go applications.
 
 The communication between Go and R is via TCP. It is thread safe and supports long running R operations synchronously or asynchronously (using channels).
