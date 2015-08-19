@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"io"
+	"log"
 )
 
 type session struct {
@@ -73,6 +74,12 @@ func (s *session) handshake() {
 		}
 	}
 	s.connected = true
+
+	if s.rServeCommProtocol != "QAP1" ||
+		s.rServeIDSig != "Rsrv" ||
+		s.rServeProtocol != "0103" {
+		log.Println("The version of RServe installed is not officially supported. Please consider upgrading to the latest version of RServe.")
+	}
 }
 
 func (s *session) setHdr(valueType dataType, valueLength int, buf []byte) {
