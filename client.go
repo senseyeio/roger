@@ -10,7 +10,7 @@ import (
 type RClient interface {
 	Evaluate(command string) <-chan Packet
 	EvaluateSync(command string) Packet
-	getReadWriteCloser() (io.ReadWriteCloser, error)
+	GetReadWriteCloser() (io.ReadWriteCloser, error)
 }
 
 type roger struct {
@@ -58,7 +58,8 @@ func (r *roger) Evaluate(command string) <-chan Packet {
 	return out
 }
 
-func (r *roger) getReadWriteCloser() (io.ReadWriteCloser, error) {
+// GetReadWriteCloser obtains a connection to obtain data from the client
+func (r *roger) GetReadWriteCloser() (io.ReadWriteCloser, error) {
 	connection, err := net.DialTCP("tcp", nil, r.address)
 	if err != nil {
 		return nil, err

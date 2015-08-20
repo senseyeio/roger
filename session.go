@@ -22,7 +22,7 @@ type session struct {
 }
 
 func newSession(client RClient) (*session, error) {
-	readWriteCloser, err := client.getReadWriteCloser()
+	readWriteCloser, err := client.GetReadWriteCloser()
 	if err != nil {
 		return nil, err
 	}
