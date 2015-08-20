@@ -55,6 +55,9 @@ func (p *Packet) GetResultObject() (interface{}, error) {
 	if p.IsError() {
 		return nil, p.GetError()
 	}
+	if len(p.content) == 0 {
+		return nil, errors.New("Command failed for an unknown reason")
+	}
 	isSexp := p.content[0] == byte(dtSexp)
 	if !isSexp {
 		return nil, errors.New("Expected SEXP response")

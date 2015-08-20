@@ -6,6 +6,7 @@ import (
 	"encoding/binary"
 	"io"
 	"log"
+	"errors"
 )
 
 type session struct {
@@ -31,8 +32,8 @@ func newSession(client RClient) (*session, error) {
 		readWriteClose: readWriteCloser,
 		readWriter:     bufio.NewReadWriter(buffRead, buffWrite),
 	}
-	sess.handshake()
-	return sess, nil
+	err = sess.handshake()
+	return sess, err
 }
 
 func (s *session) close() {
@@ -54,7 +55,7 @@ func (s *session) toCharset(str string) []byte {
 	return []byte(str)
 }
 
-func (s *session) handshake() {
+func (s *session) handshake() error {
 	s.rServeIDSig = string(s.readNBytes(4))
 	s.rServeProtocol = string(s.readNBytes(4))
 	s.rServeCommProtocol = string(s.readNBytes(4))
@@ -74,12 +75,17 @@ func (s *session) handshake() {
 		}
 	}
 	s.connected = true
-
+	if s.rServeCommProtocol == "" ||
+		s.rServeIDSig == "" ||
+		s.rServeProtocol == "" {
+		return errors.New("Handshake failed");
+	}
 	if s.rServeCommProtocol != "QAP1" ||
 		s.rServeIDSig != "Rsrv" ||
 		s.rServeProtocol != "0103" {
 		log.Println("The version of RServe installed is not officially supported. Please consider upgrading to the latest version of RServe.")
 	}
+	return nil
 }
 
 func (s *session) setHdr(valueType dataType, valueLength int, buf []byte) {
