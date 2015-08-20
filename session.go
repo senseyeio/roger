@@ -4,9 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"encoding/binary"
+	"errors"
 	"io"
 	"log"
-	"errors"
 )
 
 type session struct {
@@ -78,7 +78,7 @@ func (s *session) handshake() error {
 	if s.rServeCommProtocol == "" ||
 		s.rServeIDSig == "" ||
 		s.rServeProtocol == "" {
-		return errors.New("Handshake failed");
+		return errors.New("Handshake failed")
 	}
 	if s.rServeCommProtocol != "QAP1" ||
 		s.rServeIDSig != "Rsrv" ||
@@ -110,7 +110,7 @@ func (s *session) prepareStringCommand(cmd string) []byte {
 	return cmdBytes
 }
 
-func (s *session) sendCommand(cmd string) *Packet {
+func (s *session) sendCommand(cmd string) Packet {
 	cmdBytes := s.prepareStringCommand(cmd)
 	buf := new(bytes.Buffer)
 	//command

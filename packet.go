@@ -7,38 +7,44 @@ import (
 	"github.com/senseyeio/roger/sexp"
 )
 
-// Packet is the object returned from a R command
-// It contains either a byte array or an error
-type Packet struct {
+// Packet is the interface satisfied by objects returned from a R command.
+// It contains either the resulting object or an error.
+type Packet interface {
+	GetResultObject() (interface{}, error)
+	IsError() bool
+	GetError() error
+}
+
+type packet struct {
 	cmd     int
 	content []byte
 	err     error
 }
 
-func newPacket(cmd int, content []byte) *Packet {
-	return &Packet{
+func newPacket(cmd int, content []byte) Packet {
+	return &packet{
 		cmd:     cmd,
 		content: content,
 	}
 }
 
-func newErrorPacket(err error) *Packet {
-	return &Packet{
+func newErrorPacket(err error) Packet {
+	return &packet{
 		err: err,
 	}
 }
 
 // IsError returns a boolean defining whether the Packet contains an error.
-func (p *Packet) IsError() bool {
+func (p *packet) IsError() bool {
 	return p.err != nil || p.cmd&15 == 2
 }
 
-func (p *Packet) getStatusCode() int {
+func (p *packet) getStatusCode() int {
 	return p.cmd >> 24 & 127
 }
 
 // GetError returns an error if the Packet contains an error. If not it returns nil.
-func (p *Packet) GetError() error {
+func (p *packet) GetError() error {
 	if p.IsError() == false {
 		return nil
 	}
@@ -51,7 +57,7 @@ func (p *Packet) GetError() error {
 // GetResultObject will parse the packet's contents, returning a go interface{}.
 // If the Packet contains an error this will be returned.
 // If conversion fails, an error will be returned.
-func (p *Packet) GetResultObject() (interface{}, error) {
+func (p *packet) GetResultObject() (interface{}, error) {
 	if p.IsError() {
 		return nil, p.GetError()
 	}

@@ -8,8 +8,8 @@ import (
 
 // RClient is the main Roger interface allowing interaction with R.
 type RClient interface {
-	Evaluate(command string) <-chan *Packet
-	EvaluateSync(command string) *Packet
+	Evaluate(command string) <-chan Packet
+	EvaluateSync(command string) Packet
 	getReadWriteCloser() (io.ReadWriteCloser, error)
 }
 
@@ -38,7 +38,7 @@ func newRClientWithAuth(host string, port int64, user, password string) (RClient
 }
 
 // EvaluateSync evaluates a R command synchronously.
-func (r *roger) EvaluateSync(command string) *Packet {
+func (r *roger) EvaluateSync(command string) Packet {
 	sess, err := newSession(r)
 	if err != nil {
 		return newErrorPacket(err)
@@ -49,8 +49,8 @@ func (r *roger) EvaluateSync(command string) *Packet {
 }
 
 // Evaluate evaluates a R command asynchronously. The returned channel will resolve to a Packet once the command has completed.
-func (r *roger) Evaluate(command string) <-chan *Packet {
-	out := make(chan *Packet)
+func (r *roger) Evaluate(command string) <-chan Packet {
+	out := make(chan Packet)
 	go func() {
 		out <- r.EvaluateSync(command)
 		close(out)
