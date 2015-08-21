@@ -19,9 +19,12 @@ type session struct {
 	rServeIDSig        string
 	rServeProtocol     string
 	rServeCommProtocol string
+
+	user     string
+	password string
 }
 
-func newSession(client RClient) (*session, error) {
+func newSession(client RClient, user, password string) (*session, error) {
 	readWriteCloser, err := client.GetReadWriteCloser()
 	if err != nil {
 		return nil, err
@@ -31,6 +34,8 @@ func newSession(client RClient) (*session, error) {
 	sess := &session{
 		readWriteClose: readWriteCloser,
 		readWriter:     bufio.NewReadWriter(buffRead, buffWrite),
+		user:           user,
+		password:       password,
 	}
 	err = sess.handshake()
 	return sess, err
@@ -55,7 +60,7 @@ func (s *session) toCharset(str string) []byte {
 	return []byte(str)
 }
 
-func (s *session) handshake() error {
+func (s *session) parseInitialMessage() error {
 	s.rServeIDSig = string(s.readNBytes(4))
 	s.rServeProtocol = string(s.readNBytes(4))
 	s.rServeCommProtocol = string(s.readNBytes(4))
@@ -74,12 +79,28 @@ func (s *session) handshake() error {
 			s.key = attrString[1:3]
 		}
 	}
-	s.connected = true
+
 	if s.rServeCommProtocol == "" ||
 		s.rServeIDSig == "" ||
 		s.rServeProtocol == "" {
 		return errors.New("Handshake failed")
 	}
+	return nil
+}
+
+func (s *session) handshake() error {
+	err := s.parseInitialMessage()
+	if err != nil {
+		return err
+	}
+
+	err = login(s)
+	if err != nil {
+		return err
+	}
+
+	s.connected = true
+
 	if s.rServeCommProtocol != "QAP1" ||
 		s.rServeIDSig != "Rsrv" ||
 		s.rServeProtocol != "0103" {
@@ -110,11 +131,11 @@ func (s *session) prepareStringCommand(cmd string) []byte {
 	return cmdBytes
 }
 
-func (s *session) sendCommand(cmd string) Packet {
+func (s *session) sendCommand(cmdType command, cmd string) Packet {
 	cmdBytes := s.prepareStringCommand(cmd)
 	buf := new(bytes.Buffer)
 	//command
-	binary.Write(buf, binary.LittleEndian, int32(cmdEval))
+	binary.Write(buf, binary.LittleEndian, int32(cmdType))
 	//length of message (bits 0-31)
 	binary.Write(buf, binary.LittleEndian, int32(len(cmdBytes)))
 	//offset of message part

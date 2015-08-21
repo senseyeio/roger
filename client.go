@@ -21,10 +21,11 @@ type roger struct {
 
 // NewRClient creates a RClient which will run commands on the RServe server located at the provided host and port
 func NewRClient(host string, port int64) (RClient, error) {
-	return newRClientWithAuth(host, port, "", "")
+	return NewRClientWithAuth(host, port, "", "")
 }
 
-func newRClientWithAuth(host string, port int64, user, password string) (RClient, error) {
+// NewRClientWithAuth creates a RClient with the specified credentials and RServe server details
+func NewRClientWithAuth(host string, port int64, user, password string) (RClient, error) {
 	addr, err := net.ResolveTCPAddr("tcp", host+":"+strconv.FormatInt(port, 10))
 	if err != nil {
 		return nil, err
@@ -39,12 +40,12 @@ func newRClientWithAuth(host string, port int64, user, password string) (RClient
 
 // EvaluateSync evaluates a R command synchronously.
 func (r *roger) EvaluateSync(command string) Packet {
-	sess, err := newSession(r)
+	sess, err := newSession(r, r.user, r.password)
+	defer sess.close()
 	if err != nil {
 		return newErrorPacket(err)
 	}
-	packet := sess.sendCommand(command + "\n")
-	sess.close()
+	packet := sess.sendCommand(cmdEval, command+"\n")
 	return packet
 }
 

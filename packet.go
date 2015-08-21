@@ -11,6 +11,7 @@ import (
 // It contains either the resulting object or an error.
 type Packet interface {
 	GetResultObject() (interface{}, error)
+	IsError() bool
 }
 
 type packet struct {
@@ -33,7 +34,7 @@ func newErrorPacket(err error) Packet {
 }
 
 // IsError returns a boolean defining whether the Packet contains an error.
-func (p *packet) isError() bool {
+func (p *packet) IsError() bool {
 	return p.err != nil || p.cmd&15 == 2
 }
 
@@ -43,7 +44,7 @@ func (p *packet) getStatusCode() int {
 
 // GetError returns an error if the Packet contains an error. If not it returns nil.
 func (p *packet) getError() error {
-	if p.isError() == false {
+	if p.IsError() == false {
 		return nil
 	}
 	if p.err != nil {
@@ -56,7 +57,7 @@ func (p *packet) getError() error {
 // If the Packet contains an error this will be returned.
 // If conversion fails, an error will be returned.
 func (p *packet) GetResultObject() (interface{}, error) {
-	if p.isError() {
+	if p.IsError() {
 		return nil, p.getError()
 	}
 	if len(p.content) == 0 {
