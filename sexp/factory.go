@@ -17,6 +17,9 @@ func Parse(buf []byte, offset int) (interface{}, error) {
 	if xt == xtStringArray {
 		return parseStringArray(buf, offset)
 	}
+	if xt == xtIntArray {
+		return parseIntArray(buf, offset)
+	}
 	return nil, errors.New("Unsupported expression type: " + strconv.Itoa(int(xt)))
 
 }
