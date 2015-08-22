@@ -8,6 +8,7 @@ import (
 
 // RClient is the main Roger interface allowing interaction with R.
 type RClient interface {
+	Eval(command string) (interface{}, error)
 	Evaluate(command string) <-chan Packet
 	EvaluateSync(command string) Packet
 	GetReadWriteCloser() (io.ReadWriteCloser, error)
@@ -57,6 +58,11 @@ func (r *roger) Evaluate(command string) <-chan Packet {
 		close(out)
 	}()
 	return out
+}
+
+// Eval evaluates a R command synchronously returning the resulting object and any possible error
+func (r *roger) Eval(command string) (interface{}, error) {
+	return r.EvaluateSync(command).GetResultObject()
 }
 
 // GetReadWriteCloser obtains a connection to obtain data from the client

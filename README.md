@@ -23,17 +23,17 @@ func main() {
 	rClient, err := roger.NewRClient("127.0.0.1", 6311)
 	if err != nil {
 		fmt.Println("Failed to connect")
-        return
+		return
 	}
 
-	value, err := rClient.EvaluateSync("pi").GetResultObject()
-    if err != nil {
-        fmt.Println("Command failed: " + err.Error())
-    } else {
-        fmt.Println(value) // 3.141592653589793
-    }
+	value, err := rClient.Eval("pi")
+	if err != nil {
+		fmt.Println("Command failed: " + err.Error())
+	} else {
+		fmt.Println(value) // 3.141592653589793
+	}
 
-	helloWorld, _ := rClient.EvaluateSync("as.character('Hello World')").GetResultObject()
+	helloWorld, _ := rClient.Eval("as.character('Hello World')")
 	fmt.Println(helloWorld) // Hello World
 
 	arrChan := rClient.Evaluate("Sys.sleep(5); c(1,1)")
