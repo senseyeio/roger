@@ -30,31 +30,3 @@ func parseListTag(buf []byte, offset, end int) (interface{}, int, error) {
 	}
 	return list, offset, nil
 }
-
-/*
-if (xt==XT_LIST_NOTAG || xt==XT_LIST_TAG ||
-	xt==XT_LANG_NOTAG || xt==XT_LANG_TAG) {
-	REXPFactory lc = new REXPFactory();
-	REXPFactory nf = new REXPFactory();
-	RList l = new RList();
-	while (o<eox) {
-		String name = null;
-		o = lc.parseREXP(buf, o);
-		if (xt==XT_LIST_TAG || xt==XT_LANG_TAG) {
-			o = nf.parseREXP(buf, o);
-			if (nf.cont.isSymbol() || nf.cont.isString()) name = nf.cont.asString();
-		}
-		if (name==null) l.add(lc.cont);
-		else l.put(name, lc.cont);
-	}
-	cont = (xt==XT_LANG_NOTAG || xt==XT_LANG_TAG)?
-		new REXPLanguage(l, getAttr()):
-		new REXPList(l, getAttr());
-	if (o!=eox) {
-		System.err.println("Warning: int list SEXP size mismatch\n");
-		o=eox;
-	}
-	return o;
-}
-
-*/
