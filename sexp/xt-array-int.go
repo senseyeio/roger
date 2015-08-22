@@ -2,9 +2,9 @@ package sexp
 
 import "encoding/binary"
 
-func parseIntArray(buf []byte, offset int) (interface{}, int, error) {
-	length := len(buf)
-	noInts := (length - offset) / 4
+func parseIntArray(buf []byte, offset, end int) (interface{}, int, error) {
+	length := end - offset
+	noInts := length / 4
 	intArr := make([]int32, noInts, noInts)
 	for ct := 0; ct < noInts; ct++ {
 		start := offset

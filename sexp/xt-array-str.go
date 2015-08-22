@@ -1,9 +1,8 @@
 package sexp
 
-func parseStringArray(buf []byte, offset int) (interface{}, int, error) {
-	length := len(buf)
+func parseStringArray(buf []byte, offset, end int) (interface{}, int, error) {
 	noStrings := 0
-	for ct := offset; ct < length; ct++ {
+	for ct := offset; ct < end; ct++ {
 		if buf[ct] == 0 {
 			noStrings = noStrings + 1
 		}
@@ -12,7 +11,7 @@ func parseStringArray(buf []byte, offset int) (interface{}, int, error) {
 
 	startOfString := offset
 	idx := 0
-	for offset < length && idx < noStrings {
+	for offset < end {
 		if buf[offset] == 0 {
 			endOfString := startOfString + (offset - startOfString)
 			if buf[startOfString] == 0xff {

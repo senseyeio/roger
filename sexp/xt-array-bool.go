@@ -2,7 +2,7 @@ package sexp
 
 import "encoding/binary"
 
-func parseBoolArray(buf []byte, offset int) (interface{}, int, error) {
+func parseBoolArray(buf []byte, offset int, end int) (interface{}, int, error) {
 	boolArrayLen := binary.LittleEndian.Uint32(buf[offset : offset+4])
 	offset = offset + 4
 
