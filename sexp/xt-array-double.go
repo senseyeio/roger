@@ -5,7 +5,7 @@ import (
 	"math"
 )
 
-func parseDoubleArray(buf []byte, offset int) (interface{}, error) {
+func parseDoubleArray(buf []byte, offset int) (interface{}, int, error) {
 	length := len(buf)
 	noDoubles := (length - offset) / 8
 	doubleArr := make([]float64, noDoubles, noDoubles)
@@ -17,7 +17,7 @@ func parseDoubleArray(buf []byte, offset int) (interface{}, error) {
 		offset += 8
 	}
 	if len(doubleArr) == 1 {
-		return doubleArr[0], nil
+		return doubleArr[0], offset, nil
 	}
-	return doubleArr, nil
+	return doubleArr, offset, nil
 }

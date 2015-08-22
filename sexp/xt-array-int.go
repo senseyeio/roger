@@ -2,7 +2,7 @@ package sexp
 
 import "encoding/binary"
 
-func parseIntArray(buf []byte, offset int) (interface{}, error) {
+func parseIntArray(buf []byte, offset int) (interface{}, int, error) {
 	length := len(buf)
 	noInts := (length - offset) / 4
 	intArr := make([]int32, noInts, noInts)
@@ -14,7 +14,7 @@ func parseIntArray(buf []byte, offset int) (interface{}, error) {
 		offset += 4
 	}
 	if len(intArr) == 1 {
-		return intArr[0], nil
+		return intArr[0], offset, nil
 	}
-	return intArr, nil
+	return intArr, offset, nil
 }
