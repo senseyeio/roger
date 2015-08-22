@@ -6,9 +6,6 @@ Roger is a Go [RServe](http://www.rforge.net/Rserve/) client, allowing the capab
 
 The communication between Go and R is via TCP. It is thread safe and supports long running R operations synchronously or asynchronously (using channels).
 
-Roger is a **work in progress**, currently supporting string, string array, double and double array response types. With the use of JSON, this capability can be used to transfer any serializable object.
-
-##Example
 
 ```go
 package main
@@ -42,6 +39,19 @@ func main() {
 	fmt.Println(arr) // [1, 1]
 }
 ```
+### Response Type Support
+
+Roger currently supports the following response types:
+
+ - string and string arrays
+ - booleans and boolean arrays
+ - doubles and double arrays
+ - ints and int arrays
+ - lists (beta)
+ - vectors (beta)
+
+With the use of JSON, this capability can be used to transfer any serializable object.
+
 
 ##Setup
 Rserve should be installed and started from R:
