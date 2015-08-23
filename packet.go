@@ -10,7 +10,13 @@ import (
 // Packet is the interface satisfied by objects returned from a R command.
 // It contains either the resulting object or an error.
 type Packet interface {
+
+	// GetResultObject will parse the packet's contents, returning a go interface{}.
+	// If the Packet contains an error this will be returned.
+	// If conversion fails, an error will be returned.
 	GetResultObject() (interface{}, error)
+
+	// IsError returns a boolean defining whether the Packet contains an error.
 	IsError() bool
 }
 
@@ -33,7 +39,6 @@ func newErrorPacket(err error) Packet {
 	}
 }
 
-// IsError returns a boolean defining whether the Packet contains an error.
 func (p *packet) IsError() bool {
 	return p.err != nil || p.cmd&15 == 2
 }
@@ -42,7 +47,6 @@ func (p *packet) getStatusCode() int {
 	return p.cmd >> 24 & 127
 }
 
-// GetError returns an error if the Packet contains an error. If not it returns nil.
 func (p *packet) getError() error {
 	if p.IsError() == false {
 		return nil
@@ -53,9 +57,6 @@ func (p *packet) getError() error {
 	return errors.New("Command error with status: " + strconv.Itoa(p.getStatusCode()))
 }
 
-// GetResultObject will parse the packet's contents, returning a go interface{}.
-// If the Packet contains an error this will be returned.
-// If conversion fails, an error will be returned.
 func (p *packet) GetResultObject() (interface{}, error) {
 	if p.IsError() {
 		return nil, p.getError()

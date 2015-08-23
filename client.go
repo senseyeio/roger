@@ -8,9 +8,17 @@ import (
 
 // RClient is the main Roger interface allowing interaction with R.
 type RClient interface {
+
+	// Eval evaluates an R command synchronously returning the resulting object and any possible error
 	Eval(command string) (interface{}, error)
+
+	// Evaluate evaluates an R command asynchronously. The returned channel will resolve to a Packet once the command has completed.
 	Evaluate(command string) <-chan Packet
+
+	// EvaluateSync evaluates an R command synchronously, resulting in a Packet.
 	EvaluateSync(command string) Packet
+
+	// GetReadWriteCloser obtains a connection to obtain data from the client
 	GetReadWriteCloser() (io.ReadWriteCloser, error)
 }
 
@@ -39,7 +47,6 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 	}, nil
 }
 
-// EvaluateSync evaluates a R command synchronously.
 func (r *roger) EvaluateSync(command string) Packet {
 	sess, err := newSession(r, r.user, r.password)
 	defer sess.close()
@@ -50,7 +57,6 @@ func (r *roger) EvaluateSync(command string) Packet {
 	return packet
 }
 
-// Evaluate evaluates a R command asynchronously. The returned channel will resolve to a Packet once the command has completed.
 func (r *roger) Evaluate(command string) <-chan Packet {
 	out := make(chan Packet)
 	go func() {
@@ -60,12 +66,10 @@ func (r *roger) Evaluate(command string) <-chan Packet {
 	return out
 }
 
-// Eval evaluates a R command synchronously returning the resulting object and any possible error
 func (r *roger) Eval(command string) (interface{}, error) {
 	return r.EvaluateSync(command).GetResultObject()
 }
 
-// GetReadWriteCloser obtains a connection to obtain data from the client
 func (r *roger) GetReadWriteCloser() (io.ReadWriteCloser, error) {
 	connection, err := net.DialTCP("tcp", nil, r.address)
 	if err != nil {
