@@ -1,3 +1,4 @@
+// Package sexp parses R s expression trees into native go objects
 package sexp
 
 import (

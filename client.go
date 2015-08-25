@@ -49,10 +49,10 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 
 func (r *roger) EvaluateSync(command string) Packet {
 	sess, err := newSession(r, r.user, r.password)
-	defer sess.close()
 	if err != nil {
 		return newErrorPacket(err)
 	}
+	defer sess.close()
 	packet := sess.sendCommand(cmdEval, command+"\n")
 	return packet
 }

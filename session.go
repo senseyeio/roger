@@ -44,7 +44,9 @@ func newSession(client RClient, user, password string) (*session, error) {
 func (s *session) close() {
 	s.connected = false
 	s.readWriter = nil
-	s.readWriteClose.Close()
+	if s.readWriteClose != nil {
+		s.readWriteClose.Close()
+	}
 	s.readWriteClose = nil
 }
 
