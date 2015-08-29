@@ -48,9 +48,6 @@ func (p *packet) getStatusCode() int {
 }
 
 func (p *packet) getError() error {
-	if p.IsError() == false {
-		return nil
-	}
 	if p.err != nil {
 		return p.err
 	}
