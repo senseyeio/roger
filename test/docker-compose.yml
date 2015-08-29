@@ -1,0 +1,6 @@
+rserve:
+  build: .
+  dockerfile: Dockerfile-R
+  ports:
+   - "6311:6311"
+   - "6312:6312"

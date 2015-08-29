@@ -43,11 +43,16 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 		return nil, err
 	}
 
-	return &roger{
+	rClient := &roger{
 		address:  addr,
 		user:     user,
 		password: password,
-	}, nil
+	}
+
+	if _, err = rClient.Eval("'Test session connection'"); err != nil {
+		return nil, err
+	}
+	return rClient, nil
 }
 
 func (r *roger) EvaluateSync(command string) Packet {
