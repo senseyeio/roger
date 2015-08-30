@@ -66,7 +66,7 @@ func (r *roger) VoidEval(command string) error {
 		return err
 	}
 	defer sess.close()
-	err = sess.sendvoidCommand(cmdEval, command+"\n")
+	err = sess.sendvoidCommand(command + "\n")
 	return err
 }
 

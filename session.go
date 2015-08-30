@@ -133,7 +133,7 @@ func (s *session) prepareStringCommand(cmd string) []byte {
 	return cmdBytes
 }
 
-func (s *session) sendCommand(cmdType command, cmd string) Packet {
+func (s *session) exeCommand(cmdType command, cmd string) {
 	cmdBytes := s.prepareStringCommand(cmd)
 	buf := new(bytes.Buffer)
 	//command
@@ -148,6 +148,10 @@ func (s *session) sendCommand(cmdType command, cmd string) Packet {
 
 	s.readWriter.Write(buf.Bytes())
 	s.readWriter.Flush()
+}
+
+func (s *session) sendCommand(cmdType command, cmd string) Packet {
+	s.exeCommand(cmdType, cmd)
 
 	rep := binary.LittleEndian.Uint32(s.readNBytes(4))
 	r1 := binary.LittleEndian.Uint32(s.readNBytes(4))
@@ -161,22 +165,9 @@ func (s *session) sendCommand(cmdType command, cmd string) Packet {
 	return newPacket(int(rep), results)
 }
 
-func (s *session) sendvoidCommand(cmdType command, cmd string) error {
-	cmdBytes := s.prepareStringCommand(cmd)
-	buf := new(bytes.Buffer)
-	//command
-	binary.Write(buf, binary.LittleEndian, int32(cmdvoidEval))
-	//length of message (bits 0-31)
-	binary.Write(buf, binary.LittleEndian, int32(len(cmdBytes)))
-	//offset of message part
-	binary.Write(buf, binary.LittleEndian, int32(0))
-	// length of message (bits 32-63)
-	binary.Write(buf, binary.LittleEndian, int32(0))
-	binary.Write(buf, binary.LittleEndian, cmdBytes)
-
-	s.readWriter.Write(buf.Bytes())
-	s.readWriter.Flush()
-
+//sendvoidCommand will always use voidEval 0x4
+func (s *session) sendvoidCommand(cmd string) error {
+	s.exeCommand(cmdvoidEval, cmd)
 	rep := binary.LittleEndian.Uint32(s.readNBytes(4))
 	// r1 := binary.LittleEndian.Uint32(s.readNBytes(4))
 	s.readNBytes(8)
