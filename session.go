@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"log"
+	"strings"
 )
 
 type session struct {
@@ -119,6 +120,7 @@ func (s *session) setHdr(valueType dataType, valueLength int, buf []byte) {
 }
 
 func (s *session) prepareStringCommand(cmd string) []byte {
+	cmd = strings.Replace(cmd, "\r", "\n", -1) //avoid potential issue when loading external r script block
 	rawCmdBytes := s.toCharset(cmd)
 	requiredLength := len(rawCmdBytes) + 1
 	//make sure length is divisible by 4
