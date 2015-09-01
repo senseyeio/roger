@@ -66,3 +66,23 @@ func TestDoubleArrayParsing(t *testing.T) {
 	assert.Equal(t, ok, true, "Return obj should be a float64 array")
 	assert.Equal(t, doubleArr, []float64{2, 2.3213413213213, 3000000000, -420318392.2222})
 }
+
+func TestListParsing(t *testing.T) {
+	obj, _ := getResultObject("l <- list(); l$int <- as.integer(2); l$float <- 3.2342e04; l$char <- 'test'; l")
+	list, ok := obj.(map[string]interface{})
+	assert.Equal(t, ok, true, "Return obj should be a map")
+	assert.Equal(t, list["int"], int32(2))
+	assert.Equal(t, list["float"], float64(32342))
+	assert.Equal(t, list["char"], "test")
+}
+
+func TestNestedListParsing(t *testing.T) {
+	obj, _ := getResultObject("l <- list(); l$top <- 2; l$nested <- list(); l$nested$inner <- 3; l$nested$internal <- c(4,2,1); l")
+	list, ok := obj.(map[string]interface{})
+	assert.Equal(t, ok, true, "Return obj should be a map")
+	assert.Equal(t, list["top"], float64(2))
+	nestedList, ok := list["nested"].(map[string]interface{})
+	assert.Equal(t, ok, true, "Nested list should be available")
+	assert.Equal(t, nestedList["inner"], float64(3))
+	assert.Equal(t, nestedList["internal"], []float64{4, 2, 1})
+}
