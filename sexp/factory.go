@@ -70,5 +70,8 @@ func parseReturningOffset(buf []byte, offset int) (interface{}, int, error) {
 	if xt == xtListTag {
 		return parseListTag(buf, offset, end)
 	}
+	if xt == xtRaw {
+		return parseRaw(buf, offset, end)
+	}
 	return nil, offset, errors.New("Unsupported expression type: " + strconv.Itoa(int(xt)))
 }

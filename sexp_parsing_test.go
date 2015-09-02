@@ -1,6 +1,8 @@
 package roger
 
 import (
+	"bytes"
+	"image/png"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -85,4 +87,20 @@ func TestNestedListParsing(t *testing.T) {
 	assert.Equal(t, ok, true, "Nested list should be available")
 	assert.Equal(t, nestedList["inner"], float64(3))
 	assert.Equal(t, nestedList["internal"], []float64{4, 2, 1})
+}
+
+func TestRawParsing(t *testing.T) {
+	obj, _ := getResultObject("xx <- raw(2); xx[1] <- as.raw(40); xx[2] <- charToRaw(\"A\"); xx")
+	assert.Equal(t, obj, []byte{0x28, 0x41})
+}
+
+func TestImageParsing(t *testing.T) {
+	obj, _ := getResultObject("filename <- tempfile(\"plot\", fileext = \".png\"); png(filename, width = 480, height = 480); plot(1:10); dev.off(); image <- readBin(filename, \"raw\", 29999); image")
+	imageBytes, ok := obj.([]byte)
+	assert.Equal(t, ok, true, "Image should be returned as a raw byte array")
+	reader := bytes.NewReader(imageBytes)
+	image, err := png.Decode(reader)
+	assert.Equal(t, err, nil, "Returned byte array should be a png")
+	assert.Equal(t, image.Bounds().Max.X, 480, "Image should be 480x480")
+	assert.Equal(t, image.Bounds().Max.Y, 480, "Image should be 480x480")
 }

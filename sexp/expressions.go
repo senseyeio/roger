@@ -12,4 +12,5 @@ const (
 	xtDoubleArray expressionType = 33
 	xtStringArray expressionType = 34
 	xtBoolArray   expressionType = 36
+	xtRaw         expressionType = 37
 )
