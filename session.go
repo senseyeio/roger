@@ -10,6 +10,23 @@ import (
 	"strings"
 )
 
+// Session is an interface to send commands to an RServe session. Sessions must be closed after use.
+type Session interface {
+
+	// Sends a command to RServe which is evaluated synchronously resulting in a Packet.
+	SendCommand(command string) Packet
+
+	// Close closes a RServe session. Sessions must be closed after use.
+	Close()
+}
+
+type authType int
+
+const (
+	atPlain authType = 1
+	atCrypt authType = 2
+)
+
 type session struct {
 	readWriteClose     io.ReadWriteCloser
 	readWriter         *bufio.ReadWriter
@@ -25,11 +42,7 @@ type session struct {
 	password string
 }
 
-func newSession(client RClient, user, password string) (*session, error) {
-	readWriteCloser, err := client.GetReadWriteCloser()
-	if err != nil {
-		return nil, err
-	}
+func newSession(readWriteCloser io.ReadWriteCloser, user, password string) (*session, error) {
 	buffRead := bufio.NewReader(readWriteCloser)
 	buffWrite := bufio.NewWriter(readWriteCloser)
 	sess := &session{
@@ -38,11 +51,11 @@ func newSession(client RClient, user, password string) (*session, error) {
 		user:           user,
 		password:       password,
 	}
-	err = sess.handshake()
+	err := sess.handshake()
 	return sess, err
 }
 
-func (s *session) close() {
+func (s *session) Close() {
 	s.connected = false
 	s.readWriter = nil
 	if s.readWriteClose != nil {
@@ -91,13 +104,36 @@ func (s *session) parseInitialMessage() error {
 	return nil
 }
 
+func (s *session) login() error {
+	if s.authReq == false {
+		return nil
+	}
+	if s.authReq == true && (s.user == "" || s.password == "") {
+		return errors.New("Authentication is required and no credentials have been specified")
+	}
+	if s.key == "" {
+		s.key = "rs"
+	}
+	cmd := s.user + "\n" + s.password
+	if s.authType == atCrypt {
+		cmd = s.user + "\n" + crypt(s.password, s.key)
+	}
+
+	packet := s.sendCommand(cmdLogin, cmd)
+	if packet.IsError() {
+		_, err := packet.GetResultObject()
+		return errors.New("Authentication failed: " + err.Error())
+	}
+	return nil
+}
+
 func (s *session) handshake() error {
 	err := s.parseInitialMessage()
 	if err != nil {
 		return err
 	}
 
-	err = login(s)
+	err = s.login()
 	if err != nil {
 		return err
 	}
@@ -152,9 +188,7 @@ func (s *session) exeCommand(cmdType command, cmd string) {
 	s.readWriter.Flush()
 }
 
-func (s *session) sendCommand(cmdType command, cmd string) Packet {
-	s.exeCommand(cmdType, cmd)
-
+func (s *session) readResponse() Packet {
 	rep := binary.LittleEndian.Uint32(s.readNBytes(4))
 	r1 := binary.LittleEndian.Uint32(s.readNBytes(4))
 	s.readNBytes(8)
@@ -165,4 +199,16 @@ func (s *session) sendCommand(cmdType command, cmd string) Packet {
 
 	results := s.readNBytes(int(r1))
 	return newPacket(int(rep), results)
+}
+
+func (s *session) sendCommand(cmdType command, cmd string) Packet {
+	if s.connected == false && cmdType != cmdLogin {
+		return newErrorPacket(errors.New("Session was previously closed"))
+	}
+	s.exeCommand(cmdType, cmd)
+	return s.readResponse()
+}
+
+func (s *session) SendCommand(cmd string) Packet {
+	return s.sendCommand(cmdEval, cmd)
 }

@@ -9,17 +9,17 @@ import (
 // RClient is the main Roger interface allowing interaction with R.
 type RClient interface {
 
-	// Eval evaluates an R command synchronously returning the resulting object and any possible error
+	// Eval evaluates an R command synchronously returning the resulting object and any possible error. Creates a new session per command.
 	Eval(command string) (interface{}, error)
 
-	// Evaluate evaluates an R command asynchronously. The returned channel will resolve to a Packet once the command has completed.
+	// Evaluate evaluates an R command asynchronously. The returned channel will resolve to a Packet once the command has completed. Creates a new session per command.
 	Evaluate(command string) <-chan Packet
 
-	// EvaluateSync evaluates an R command synchronously, resulting in a Packet.
+	// EvaluateSync evaluates an R command synchronously, resulting in a Packet. Creates a new session per command.
 	EvaluateSync(command string) Packet
 
-	// GetReadWriteCloser obtains a connection to obtain data from the client
-	GetReadWriteCloser() (io.ReadWriteCloser, error)
+	// GetSession gets a session object which can be used to perform multiple commands in the same Rserve session.
+	GetSession() (Session, error)
 }
 
 type roger struct {
@@ -52,13 +52,29 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 	return rClient, nil
 }
 
+func (r *roger) GetSession() (Session, error) {
+	rwc, err := r.getReadWriteCloser()
+	if err != nil {
+		return nil, err
+	}
+	return newSession(rwc, r.user, r.password)
+}
+
+func (r *roger) getReadWriteCloser() (io.ReadWriteCloser, error) {
+	connection, err := net.DialTCP("tcp", nil, r.address)
+	if err != nil {
+		return nil, err
+	}
+	return connection, nil
+}
+
 func (r *roger) EvaluateSync(command string) Packet {
-	sess, err := newSession(r, r.user, r.password)
+	sess, err := r.GetSession()
 	if err != nil {
 		return newErrorPacket(err)
 	}
-	defer sess.close()
-	packet := sess.sendCommand(cmdEval, command+"\n")
+	defer sess.Close()
+	packet := sess.SendCommand(command + "\n")
 	return packet
 }
 
@@ -73,12 +89,4 @@ func (r *roger) Evaluate(command string) <-chan Packet {
 
 func (r *roger) Eval(command string) (interface{}, error) {
 	return r.EvaluateSync(command).GetResultObject()
-}
-
-func (r *roger) GetReadWriteCloser() (io.ReadWriteCloser, error) {
-	connection, err := net.DialTCP("tcp", nil, r.address)
-	if err != nil {
-		return nil, err
-	}
-	return connection, nil
 }
