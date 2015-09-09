@@ -2,8 +2,6 @@ package roger
 
 import (
 	"errors"
-	"strconv"
-
 	"github.com/senseyeio/roger/sexp"
 )
 
@@ -48,10 +46,15 @@ func (p *packet) getStatusCode() int {
 }
 
 func (p *packet) getError() error {
+	ERROR_DESCRIPTIONS := map[int]string{
+		2:   "Invalid expression",
+		3:   "Parse error",
+		127: "Unknown variable/method"}
+
 	if p.err != nil {
 		return p.err
 	}
-	return errors.New("Command error with status: " + strconv.Itoa(p.getStatusCode()))
+	return errors.New("Command error with status: " + ERROR_DESCRIPTIONS[p.getStatusCode()])
 }
 
 func (p *packet) GetResultObject() (interface{}, error) {
