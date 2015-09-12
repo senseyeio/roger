@@ -3,6 +3,7 @@ package roger
 import (
 	"errors"
 	"github.com/senseyeio/roger/sexp"
+	"strconv"
 )
 
 // Packet is the interface satisfied by objects returned from a R command.
@@ -46,7 +47,7 @@ func (p *packet) getStatusCode() int {
 }
 
 func (p *packet) getError() error {
-	ERROR_DESCRIPTIONS := map[int]string{
+	errDescMap := map[int]string{
 		2:   "Invalid expression",
 		3:   "Parse error",
 		127: "Unknown variable/method"}
@@ -54,7 +55,12 @@ func (p *packet) getError() error {
 	if p.err != nil {
 		return p.err
 	}
-	return errors.New("Command error with status: " + ERROR_DESCRIPTIONS[p.getStatusCode()])
+
+	if errDesc, found := errDescMap[p.getStatusCode()]; found {
+		return errors.New("Command error with status: " + errDesc)
+	}
+
+	return errors.New("Command error with status code: " + strconv.Itoa(p.getStatusCode()))
 }
 
 func (p *packet) GetResultObject() (interface{}, error) {
