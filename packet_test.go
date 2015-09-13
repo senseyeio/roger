@@ -34,8 +34,19 @@ func TestCommandFailurePacketIsError(t *testing.T) {
 func TestCommandFailurePacketResultObject(t *testing.T) {
 	failedCmdPkt := newPacket(0x01000002, []byte{})
 	obj, err := failedCmdPkt.GetResultObject()
-	if err.Error() != "Command error with status: 1" {
+	if err.Error() != "Command error with status code: 1" {
 		t.Error("A failed command packet's error message should contain the status code element of the command response")
+	}
+	if obj != nil {
+		t.Error("A failed command packet should return a nil object")
+	}
+}
+
+func TestCommandFailurePacketResultStatus(t *testing.T) {
+	failedCmdPkt := newPacket(0x02000002, []byte{})
+	obj, err := failedCmdPkt.GetResultObject()
+	if err.Error() != "Command error with status: Invalid expression" {
+		t.Error("A failed command packet's error message should contain the status message of the command response")
 	}
 	if obj != nil {
 		t.Error("A failed command packet should return a nil object")
