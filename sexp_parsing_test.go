@@ -104,3 +104,18 @@ func TestImageParsing(t *testing.T) {
 	assert.Equal(t, image.Bounds().Max.X, 480, "Image should be 480x480")
 	assert.Equal(t, image.Bounds().Max.Y, 480, "Image should be 480x480")
 }
+
+func TestComplexParsing(t *testing.T) {
+	obj, _ := getResultObject("complex(real = 1, imaginary = 2.22)")
+	c, ok := obj.(complex128)
+	assert.Equal(t, ok, true, "Return obj should be a complex128")
+	assert.Equal(t, real(c), float64(1))
+	assert.Equal(t, imag(c), float64(2.22))
+}
+
+func TestComplexArrayParsing(t *testing.T) {
+	obj, _ := getResultObject("c(complex(real = 1, imaginary = 2.22), complex(real = 100, imaginary = -222))")
+	cArr, ok := obj.([]complex128)
+	assert.Equal(t, ok, true, "Return obj should be an complex128 array")
+	assert.Equal(t, cArr, []complex128{complex(1, 2.22), complex(100, -222)})
+}
