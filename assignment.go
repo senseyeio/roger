@@ -45,7 +45,6 @@ func (r *session) prepareAssignment(m interface{}) string {
 			}
 		}
 		t_str = fmt.Sprintf("%v <- c(%v)", r_var, t_str)
-		// fmt.Println("reflect:", r_var, r_value)
 		r_assignment_str = r_assignment_str + fmt.Sprintf("%v\n", t_str)
 	}
 	return r_assignment_str
@@ -53,7 +52,6 @@ func (r *session) prepareAssignment(m interface{}) string {
 
 func (s *session) StructToR(m interface{}) error {
 	r_assignment_str := s.prepareAssignment(m)
-	fmt.Println("assign str: ", r_assignment_str)
 	packet := s.SendCommand(r_assignment_str)
 	_, err := packet.GetResultObject()
 	return err

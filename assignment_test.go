@@ -1,7 +1,6 @@
 package roger
 
 import (
-	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,9 +15,6 @@ func TestStructToR(t *testing.T) {
 	client, _ := NewRClient("localhost", 6311)
 	sess, err := client.GetSession()
 	defer sess.Close()
-	// obj, err := sess.SendCommand("2.2").GetResultObject()
-	// assert.Equal(t, obj, float64(2.2))
-	// assert.Equal(t, err, nil)
 
 	info := &Info{A: "1, 2, 3, 4", B: `"a" "b" "c" "d"`}
 	sess.StructToR(info)
