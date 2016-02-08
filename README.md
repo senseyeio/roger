@@ -42,7 +42,7 @@ func main() {
 ```
 ### Response Type Support
 
-Roger currently supports the following response types:
+Roger currently supports the following response types from R:
 
  - string and string arrays
  - booleans and boolean arrays
@@ -52,10 +52,21 @@ Roger currently supports the following response types:
  - lists
  - raw byte arrays
 
-With the use of JSON, this capability can be used to transfer any serializable object.
+With the use of JSON, this capability can be used to transfer any serializable object. For examples see sexp_parsing_test.go.
 
 
-##Setup
+### Assignment Support (beta)
+
+Roger allows variables to be defined within an R session from Go. Currently the following types are supported for variable assignment:
+
+ - string and string arrays
+ - byte arrays
+ - double arrays
+ - int arrays
+
+For examples see assignment_test.go.
+
+## Setup
 Rserve should be installed and started from R:
 
 ```R
@@ -80,7 +91,7 @@ Install Roger using:
 go get github.com/senseyeio/roger
 ```
 
-##Testing
+## Testing
 To ensure the library functions correctly, the end to end functionality must be tested. This is achieved using [Docker](https://docs.docker.com) and [Docker Compose](https://docs.docker.com/compose). To run tests, ensure you have both Docker and Docker Compose installed, then run `docker-compose build && docker-compose up -d` from within the test directory. This command will build and start a docker container containing multiple RServe servers. These servers will be utilized when running `go test` from the project's base directory. To stop the docker container call `docker-compose stop` from the test directory.
 
 ## Contributing
