@@ -135,3 +135,8 @@ func TestLongResponse(t *testing.T) {
 	assert.Equal(t, ok, true, "Return obj should be a string")
 	assert.Equal(t, len(str), 15000000, "String length expected to be 15000000 characters")
 }
+
+func TestLangTag(t *testing.T) {
+	_, err := getResultObject("expression(2^x)")
+	assert.Nil(t, err)
+}

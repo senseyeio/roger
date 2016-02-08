@@ -9,18 +9,19 @@ func parseLang(buf []byte, offset, end int) (interface{}, int, error) {
 		isRoot = true
 	}
 
-	var headf, tagf interface{}
+	var headf interface{}
 	var err error
 	headf, offset, err = parseReturningOffset(buf, offset)
 	if err != nil {
 		return nil, offset, err
 	}
 	rootList = append(rootList, headf)
-	_, offset, err = parseReturningOffset(buf, offset)
 
-	if offset < end {
-		tagf, offset, err = parseReturningOffset(buf, offset)
-		_ = tagf
+	for offset < end {
+		_, offset, err = parseReturningOffset(buf, offset)
+		if err != nil {
+			return nil, offset, err
+		}
 	}
 
 	var rtn interface{}

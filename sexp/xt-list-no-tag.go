@@ -42,10 +42,11 @@ func parseListNoTag(attr interface{}, buf []byte, offset, end int) (interface{},
 			listNoTagArr = append(listNoTagArr, listNoTagEntry)
 		}
 	}
+
 	if offset != end {
 		log.Println("Warning: vector size mismatch")
 		offset = end
 	}
-	//	return parseListNoTagAttr(attr, listNoTagArr, offset)
+
 	return listNoTagArr, offset, nil
 }
