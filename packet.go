@@ -2,8 +2,10 @@ package roger
 
 import (
 	"errors"
-	"github.com/qingdimeng/roger/sexp"
 	"strconv"
+
+	"github.com/senseyeio/roger/constants"
+	"github.com/senseyeio/roger/sexp"
 )
 
 // Packet is the interface satisfied by objects returned from a R command.
@@ -17,6 +19,7 @@ type Packet interface {
 
 	// IsError returns a boolean defining whether the Packet contains an error.
 	IsError() bool
+	// IsOk returns a boolean defining whether Packet was success
 	IsOk() bool
 }
 
@@ -44,7 +47,7 @@ func (p *packet) IsError() bool {
 }
 
 func (p *packet) IsOk() bool {
-	return p.cmd&15 == 1
+	return !p.IsError()
 }
 
 func (p *packet) getStatusCode() int {
@@ -75,7 +78,7 @@ func (p *packet) GetResultObject() (interface{}, error) {
 	if len(p.content) == 0 {
 		return nil, errors.New("Command failed for an unknown reason")
 	}
-	isSexp := p.content[0] == byte(dtSexp)
+	isSexp := p.content[0] == byte(constants.DtSexp)
 	if !isSexp {
 		return nil, errors.New("Expected SEXP response")
 	}

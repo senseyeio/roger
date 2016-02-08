@@ -3,6 +3,8 @@ package roger
 import (
 	"errors"
 	"testing"
+
+	"github.com/senseyeio/roger/constants"
 )
 
 func TestErrorPacketIsError(t *testing.T) {
@@ -28,6 +30,13 @@ func TestCommandFailurePacketIsError(t *testing.T) {
 	failedCmdPkt := newPacket(0x01000002, []byte{})
 	if failedCmdPkt.IsError() == false {
 		t.Error("A command with an error flag should return true when IsError is called")
+	}
+}
+
+func TestCommandFailurePacketIsOk(t *testing.T) {
+	failedCmdPkt := newPacket(0x01000002, []byte{})
+	if failedCmdPkt.IsOk() == true {
+		t.Error("A command with an error flag should return false when IsOk is called")
 	}
 }
 
@@ -60,6 +69,13 @@ func TestCommandSuccessPacketIsError(t *testing.T) {
 	}
 }
 
+func TestCommandSuccessPacketIsOk(t *testing.T) {
+	successfulCmdPkt := newPacket(0x01000003, []byte{})
+	if successfulCmdPkt.IsOk() == false {
+		t.Error("A command without an error flag should return true when IsOk is called")
+	}
+}
+
 func TestEmptyResponsePacketResultObject(t *testing.T) {
 	emptyPkt := newPacket(0x01000003, []byte{})
 	obj, err := emptyPkt.GetResultObject()
@@ -84,7 +100,7 @@ func TestSuccessfulResponseResultObject(t *testing.T) {
 }
 
 func TestNonSEXPResponse(t *testing.T) {
-	stringResp := newPacket(0x01000003, []byte{byte(dtString)})
+	stringResp := newPacket(0x01000003, []byte{byte(constants.DtString)})
 	obj, err := stringResp.GetResultObject()
 	if err == nil {
 		t.Error("Packets containing non SEXP content should return an error")

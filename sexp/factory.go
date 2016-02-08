@@ -4,8 +4,10 @@ package sexp
 import (
 	"encoding/binary"
 	"errors"
-	//	"log"
+
 	"strconv"
+
+	"github.com/senseyeio/roger/constants"
 )
 
 // Parse converts a byte array containing R SEXP to a golang object.
@@ -37,7 +39,7 @@ func parseReturningOffset(buf []byte, offset int) (interface{}, int, error) {
 	if err != nil {
 		return nil, len(buf), err
 	}
-	xt := expressionType(buf[offset] & 63)
+	xt := constants.ExpressionType(buf[offset] & 63)
 
 	hasAtt := ((buf[offset] & 128) != 0)
 
@@ -46,8 +48,6 @@ func parseReturningOffset(buf []byte, offset int) (interface{}, int, error) {
 		offset = offset + 4
 	}
 	end := offset + length
-
-	//	log.Printf("parseREXP: type=%v, len=%v, hasAtt=%v, isLong=%v\n", xt, length, hasAtt, isLong)
 
 	var attr interface{}
 	if hasAtt {
@@ -58,70 +58,64 @@ func parseReturningOffset(buf []byte, offset int) (interface{}, int, error) {
 		}
 	}
 
-	if xt == xtNull {
+	if xt == constants.XtNull {
 		return nil, offset, nil
 	}
-	if xt == xtInt {
+	if xt == constants.XtInt {
 		return parseInt(buf, offset, end)
 	}
-	if xt == xtString {
+	if xt == constants.XtString {
 		return parseString(buf, offset, end)
 	}
-	if xt == xtLang {
+	if xt == constants.XtLang {
 		return parseLang(buf, offset, end)
 	}
-	/*
-		if xt == xtS4 {
-			//TODO
-			return nil, offset, errors.New("Unimplemented expression type: XT_S4")
-		}
-	*/
-	if xt == xtClos {
-		return nil, offset, errors.New("Unimplemented expression type: XT_CLOS")
+	if xt == constants.XtS4 {
+		return nil, end, errors.New("Unimplemented expression type: XT_S4")
 	}
-	if xt == xtSymName {
+	if xt == constants.XtClos {
+		return nil, end, errors.New("Unimplemented expression type: XT_CLOS")
+	}
+	if xt == constants.XtSymName {
 		return parseSymName(buf, offset, end)
 	}
-	if xt == xtDoubleArray {
+	if xt == constants.XtDoubleArray {
 		return parseDoubleArray(buf, offset, end)
 	}
-	if xt == xtStringArray {
+	if xt == constants.XtStringArray {
 		return parseStringArray(buf, offset, end)
 	}
-	if xt == xtIntArray {
+	if xt == constants.XtIntArray {
 		return parseIntArray(buf, offset, end)
 	}
-	if xt == xtBoolArray {
+	if xt == constants.XtBoolArray {
 		return parseBoolArray(buf, offset, end)
 	}
-	if xt == xtVector {
+	if xt == constants.XtVector {
 		return parseVector(attr, buf, offset, end)
 	}
-	if xt == xtListNoTag {
+	if xt == constants.XtListNoTag {
 		return parseListNoTag(attr, buf, offset, end)
 	}
-	if xt == xtListTag {
+	if xt == constants.XtListTag {
 		return parseListTag(buf, offset, end)
 	}
-
-	if xt == xtLangNoTag {
+	if xt == constants.XtLangNoTag {
 		return parseListNoTag(attr, buf, offset, end)
 	}
-
-	if xt == xtLangTag {
+	if xt == constants.XtLangTag {
 		return parseLangTag(buf, offset, end)
 	}
-	if xt == xtExpVector {
+	if xt == constants.XtExpVector {
 		return parseExpVector(attr, buf, offset, end)
 	}
-	if xt == xtRaw {
+	if xt == constants.XtRaw {
 		return parseRaw(buf, offset, end)
 	}
-	if xt == xtComplexArray {
+	if xt == constants.XtComplexArray {
 		return parseComplexArray(buf, offset, end)
 	}
-
-	if xt == xtUnknown {
+	if xt == constants.XtUnknown {
 		return parseUnknown(buf, offset, end)
 	}
 

@@ -15,6 +15,15 @@ func TestSessionCommand(t *testing.T) {
 	assert.Equal(t, err, nil)
 }
 
+func TestSessionEval(t *testing.T) {
+	client, _ := NewRClient("localhost", 6311)
+	sess, err := client.GetSession()
+	defer sess.Close()
+	obj, err := sess.Eval("2.2")
+	assert.Equal(t, obj, float64(2.2))
+	assert.Equal(t, err, nil)
+}
+
 func TestMultipleSessionCommands(t *testing.T) {
 	client, _ := NewRClient("localhost", 6311)
 	sess, err := client.GetSession()
