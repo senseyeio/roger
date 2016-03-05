@@ -7,8 +7,9 @@ RUN apt-get install -y --no-install-recommends \
               libcurl4-gnutls-dev \
               libssl-dev
 
-RUN R -e 'options(repos = c(CRAN = "http://cran.rstudio.com/")); install.packages(c("Rserve"))'
+RUN R -e 'install.packages("Rserve",,"http://rforge.net/")'
 
+RUN echo "port 6311" >> /etc/Rserv.conf
 RUN echo "remote enable" >> /etc/Rserv.conf
 
 RUN echo "port 6312" >> /etc/Rserv-secure.conf

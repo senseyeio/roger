@@ -6,6 +6,9 @@ func TestConnection(t *testing.T) {
 	if _, err := NewRClient("localhost", 6311); err != nil {
 		t.Error("Failed to connect to RServe: " + err.Error())
 	}
+	if _, err := NewRClient("localhost", 6313); err != nil {
+		t.Error("Failed to connect to RServe from CRAN: " + err.Error())
+	}
 }
 
 func TestConnectionFailure(t *testing.T) {
@@ -20,6 +23,9 @@ func TestConnectionFailure(t *testing.T) {
 func TestSecureConnection(t *testing.T) {
 	if _, err := NewRClientWithAuth("localhost", 6312, "roger", "testpassword"); err != nil {
 		t.Error("Failed to connect to secure RServe: " + err.Error())
+	}
+	if _, err := NewRClientWithAuth("localhost", 6314, "roger", "testpassword"); err != nil {
+		t.Error("Failed to connect to secure RServe from CRAN: " + err.Error())
 	}
 }
 

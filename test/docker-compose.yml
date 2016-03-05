@@ -1,6 +1,13 @@
-rserve:
+rserve-cran:
   build: .
-  dockerfile: Dockerfile-R
+  dockerfile: Dockerfile-RServe-Cran
   ports:
+   - "6313:6313"
+   - "6314:6314"
+
+rserve-rforge:
+ build: .
+ dockerfile: Dockerfile-RServe-RForge
+ ports:
    - "6311:6311"
    - "6312:6312"
