@@ -40,7 +40,6 @@ func parseReturningOffset(buf []byte, offset int) (interface{}, int, error) {
 		return nil, len(buf), err
 	}
 	xt := constants.ExpressionType(buf[offset] & 63)
-
 	hasAtt := ((buf[offset] & 128) != 0)
 
 	offset = offset + 4

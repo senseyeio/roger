@@ -2,9 +2,11 @@ package roger
 
 import (
 	"bytes"
+	"fmt"
 	"image/png"
 	"testing"
 
+	"github.com/senseyeio/roger/types"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -138,5 +140,13 @@ func TestLongResponse(t *testing.T) {
 
 func TestLangTag(t *testing.T) {
 	_, err := getResultObject("expression(2^x)")
+	assert.Nil(t, err)
+}
+
+func TestNA(t *testing.T) {
+	fmt.Println("start")
+	defer fmt.Println("end")
+	res, err := getResultObject("NA")
+	assert.Equal(t, res, types.NA)
 	assert.Nil(t, err)
 }

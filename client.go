@@ -23,9 +23,10 @@ type RClient interface {
 }
 
 type roger struct {
-	address  *net.TCPAddr
-	user     string
-	password string
+	address   *net.TCPAddr
+	user      string
+	password  string
+	rBoolResp bool
 }
 
 // NewRClient creates a RClient which will run commands on the RServe server located at the provided host and port
@@ -50,6 +51,16 @@ func NewRClientWithAuth(host string, port int64, user, password string) (RClient
 		return nil, err
 	}
 	return rClient, nil
+}
+
+// NewRClientWithOptions creates a RClient which will run commands on the RServe server located at the provided host and port
+func NewRClientWithOptions(host string, port int64, user, password string, rBoolResponses bool) (RClient, error) {
+	rClient, err := NewRClientWithAuth(host, port, user, password)
+	if err != nil {
+		return nil, err
+	}
+	rClient.rBoolResp = rBoolResponses
+	return rClient, err
 }
 
 func (r *roger) GetSession() (Session, error) {
