@@ -86,9 +86,21 @@ func (s *session) toCharset(str string) []byte {
 }
 
 func (s *session) parseInitialMessage() error {
-	s.rServeIDSig = string(s.readNBytes(4))
-	s.rServeProtocol = string(s.readNBytes(4))
-	s.rServeCommProtocol = string(s.readNBytes(4))
+	isByteArrayJustZeros := func(bArr []byte) bool {
+		return len(bytes.Replace(bArr, []byte{0}, []byte{}, -1)) == 0
+	}
+	rserveIDSigBytes := s.readNBytes(4)
+	rServeProtocolBytes := s.readNBytes(4)
+	rServeCommProtocolBytes := s.readNBytes(4)
+	if isByteArrayJustZeros(rserveIDSigBytes) ||
+		isByteArrayJustZeros(rServeProtocolBytes) ||
+		isByteArrayJustZeros(rServeCommProtocolBytes) {
+		return errors.New("Handshake failed - please check the connection details")
+	}
+
+	s.rServeIDSig = string(rserveIDSigBytes)
+	s.rServeProtocol = string(rServeProtocolBytes)
+	s.rServeCommProtocol = string(rServeCommProtocolBytes)
 	for i := 12; i < 32; i += 4 {
 		attr := s.readNBytes(4)
 		attrString := string(attr)
@@ -103,12 +115,6 @@ func (s *session) parseInitialMessage() error {
 		if attrString[0] == 'K' {
 			s.key = attrString[1:3]
 		}
-	}
-
-	if s.rServeCommProtocol == "" ||
-		s.rServeIDSig == "" ||
-		s.rServeProtocol == "" {
-		return errors.New("Handshake failed")
 	}
 	return nil
 }

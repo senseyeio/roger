@@ -4,6 +4,7 @@ rserve-cran:
   ports:
    - "6313:6313"
    - "6314:6314"
+   - "6315:6315"
 
 rserve-rforge:
  build: .

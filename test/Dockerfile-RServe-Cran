@@ -23,4 +23,4 @@ WORKDIR /usr/local/src/senseyeio
 
 CMD nohup R < test.r --no-save & nohup R < test-secure.r --no-save
 
-EXPOSE 6313 6314
+EXPOSE 6313 6314 6315

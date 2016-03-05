@@ -1,6 +1,9 @@
 package roger
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestConnection(t *testing.T) {
 	if _, err := NewRClient("localhost", 6311); err != nil {
@@ -17,6 +20,16 @@ func TestConnectionFailure(t *testing.T) {
 	}
 	if _, err := NewRClient("%20", 6311); err == nil {
 		t.Error("Should fail when trying to connect to an invalid host")
+	}
+}
+
+func TestHandshakeFailure(t *testing.T) {
+	_, err := NewRClient("localhost", 6315)
+	if err == nil {
+		t.Error("Should fail when trying to connect to a port not exposing RServe")
+	}
+	if strings.Contains(err.Error(), "Handshake") == false {
+		t.Error("Should fail with a handshake error")
 	}
 }
 
