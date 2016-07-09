@@ -6,11 +6,11 @@ services:
  - docker
 
 before_script:
- - cd test && docker-compose up -d
+ - pushd test && docker-compose up -d && popd
  - sleep 20
 
 after_script:
- - cd test && docker-compose kill
+ - pushd test && docker-compose kill && popd
 
 go:
  - 1.3
