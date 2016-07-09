@@ -1,6 +1,7 @@
 # Roger
 
 [![GoDoc](https://godoc.org/github.com/senseyeio/roger?status.svg)](https://godoc.org/github.com/senseyeio/roger)
+[![Build Status](https://travis-ci.org/senseyeio/roger.svg?branch=master)](https://travis-ci.org/senseyeio/roger)
 [![Join the chat at https://gitter.im/senseyeio/roger](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/senseyeio/roger?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 Roger is a Go [RServe](http://www.rforge.net/Rserve/) client, allowing the capabilities of [R](http://www.r-project.org/) to be used from Go applications.
