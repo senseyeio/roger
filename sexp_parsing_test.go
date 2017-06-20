@@ -128,12 +128,21 @@ func TestComplexArrayParsing(t *testing.T) {
 	assert.Equal(t, cArr, []complex128{complex(1, 2.22), complex(100, -222)})
 }
 
-func TestLongResponse(t *testing.T) {
-	obj, err := getResultObject("paste(rep(\"a\", 15000000), sep=\"\", collapse = \"\")")
+func TestLargeResponse(t *testing.T) {
+	obj, err := getResultObject("paste(rep(\"a\", 20000000), sep=\"\", collapse = \"\")")
 	assert.Nil(t, err)
 	str, ok := obj.(string)
 	assert.Equal(t, ok, true, "Return obj should be a string")
-	assert.Equal(t, len(str), 15000000, "String length expected to be 15000000 characters")
+	assert.Equal(t, len(str), 20000000, "String length expected to be 20000000 characters")
+}
+
+func TestLargeStringArrayResponse(t *testing.T) {
+	obj, err := getResultObject("item <- paste(rep(\"a\", 10000000), sep=\"\", collapse = \"\"); c(item, item, item)")
+	assert.Nil(t, err)
+	strArr, ok := obj.([]string)
+	assert.Equal(t, ok, true, "Return obj should be a string array")
+	assert.Equal(t, len(strArr), 3)
+	assert.Equal(t, len(strArr[0]), 10000000, "String length expected to be 10000000 characters")
 }
 
 func TestLangTag(t *testing.T) {

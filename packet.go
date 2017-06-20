@@ -79,8 +79,13 @@ func (p *packet) GetResultObject() (interface{}, error) {
 		return nil, errors.New("Command failed for an unknown reason")
 	}
 	isSexp := p.content[0] == byte(constants.DtSexp)
-	if !isSexp {
-		return nil, errors.New("Expected SEXP response")
+	isLarge := p.content[0] == byte(constants.DtLarge)
+	if !isSexp && !isLarge {
+		return nil, errors.New("Expected DT_SEXP or DT_LARGE response")
 	}
-	return sexp.Parse(p.content[4:len(p.content)], 0)
+	offset := 4
+	if isLarge {
+		offset = 8
+	}
+	return sexp.Parse(p.content[offset:len(p.content)], 0)
 }
