@@ -56,7 +56,7 @@ Roger currently supports the following response types from R:
 With the use of JSON, this capability can be used to transfer any serializable object. For examples see sexp_parsing_test.go.
 
 
-### Assignment Support (beta)
+### Assignment Support
 
 Roger allows variables to be defined within an R session from Go. Currently the following types are supported for variable assignment:
 

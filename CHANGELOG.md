@@ -1,3 +1,8 @@
+0.3.0
+ - Added support for DT_LARGE responses, these are used for extremely large responses from R
+ - Fixed bug where handshake issues were reported as incompatible RServe versions
+ - Assignment capabilities no longer beta
+
 0.2.0
  - Added variable assignment [beta] (thanks @qingdimeng)
  - Fixed boolean array parsing in lists (thanks @harryrose)
