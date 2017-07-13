@@ -1,3 +1,6 @@
+0.3.1
+ - Fixed DT_LARGE assignments
+
 0.3.0
  - Added support for DT_LARGE responses, these are used for extremely large responses from R
  - Fixed bug where handshake issues were reported as incompatible RServe versions
