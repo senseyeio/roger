@@ -1,6 +1,7 @@
 package roger
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -13,8 +14,8 @@ func checkAssignment(t *testing.T, assignmentObj interface{}) {
 	err := sess.Assign("assignedVar", assignmentObj)
 	assert.Equal(t, err, nil)
 	obj, err := sess.Eval("assignedVar")
-	assert.Equal(t, obj, assignmentObj)
-	assert.Equal(t, err, nil)
+	assert.Equal(t, assignmentObj, obj)
+	assert.Equal(t, nil, err)
 }
 
 func TestIntArrayAssignment(t *testing.T) {
@@ -35,4 +36,8 @@ func TestByteArrayAssignment(t *testing.T) {
 
 func TestStringAssignment(t *testing.T) {
 	checkAssignment(t, "testing")
+}
+
+func TestLargeStringAssignment(t *testing.T) {
+	checkAssignment(t, strings.Repeat("a", 20000000))
 }

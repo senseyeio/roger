@@ -3,10 +3,8 @@ package assign
 import "github.com/senseyeio/roger/constants"
 
 func assignIntArray(symbol string, value []int32) ([]byte, error) {
-	rl := len(value)*4 + 4
-	if rl > 0xfffff0 {
-		rl += 4
-	}
+	rl := len(value) * 4
+
 	symn := []byte(symbol)
 	sl := len(symn) + 1
 	if (sl & 3) > 0 {
@@ -15,34 +13,27 @@ func assignIntArray(symbol string, value []int32) ([]byte, error) {
 
 	var rq []byte
 
-	if rl > 0xfffff0 {
-		rq = make([]byte, sl+rl+12)
-	} else {
-		rq = make([]byte, sl+rl+8)
-	}
+	shl := GetHeaderLength(constants.DtString, sl)
+	sextHeader := GetHeaderLength(constants.DataType(constants.XtIntArray), rl)
+	rhl := GetHeaderLength(constants.DtSexp, rl+sextHeader)
+
+	rq = make([]byte, sl+rl+shl+rhl+sextHeader)
 
 	ic := 0
 	for ; ic < len(symn); ic++ {
-		rq[ic+4] = symn[ic]
+		rq[ic+shl] = symn[ic]
 	}
 	for ic < sl {
-		rq[ic+4] = 0
+		rq[ic+shl] = 0
 		ic++
 	}
 
 	setHdrOffset(constants.DtString, sl, rq, 0)
-	setHdrOffset(constants.DtSexp, rl, rq, sl+4)
+	setHdrOffset(constants.DtSexp, rl+sextHeader, rq, sl+shl)
 
-	var off int
-	if rl > 0xfffff0 {
-		off = sl + 12
-		setHdrOffset(32, rl-8, rq, off)
-		off += 8
-	} else {
-		off = sl + 8
-		setHdrOffset(32, rl-4, rq, off)
-		off += 4
-	}
+	off := sl + shl + rhl
+	setHdrOffset(constants.DataType(constants.XtIntArray), rl, rq, off)
+	off += sextHeader
 
 	i := 0
 	io := off

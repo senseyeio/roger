@@ -1,38 +1,41 @@
 package assign
 
-import "github.com/senseyeio/roger/constants"
+import (
+	"github.com/senseyeio/roger/constants"
+)
+
+func GetHeaderLength(valueType constants.DataType, valueLength int) int {
+	// Simon Urbanek confirmed for pyRserve that this does not cause any problems with Rserve.
+	return constants.LgHeaderSize
+}
 
 func SetHdr(valueType constants.DataType, valueLength int, buf []byte) {
-	buf[0] = byte(valueType)
-	buf[1] = byte(valueLength & 255)
-	buf[2] = byte((valueLength & 0xff00) >> 8)
-	buf[3] = byte((valueLength & 0xff0000) >> 16)
+	setHdrOffset(valueType, valueLength, buf, 0)
 }
 
 func setHdrOffset(valueType constants.DataType, valueLength int, buf []byte, o int) {
-	if valueLength > 0xfffff0 {
-		buf[o] = byte((valueType & 255) | constants.DtLarge)
-		o++
-	} else {
-		buf[o] = byte(valueType & 255)
-		o++
-	}
+
+	// always large headers
+	buf[o] = byte((valueType & 255) | constants.DtLarge)
+	o++
+
+	// main body
 	buf[o] = byte(valueLength & 255)
 	o++
 	buf[o] = byte((valueLength & 0xff00) >> 8)
 	o++
 	buf[o] = byte((valueLength & 0xff0000) >> 16)
 	o++
-	if valueLength > 0xfffff0 {
-		buf[o] = byte((valueLength & 0xff000000) >> 24)
-		o++
-		buf[o] = 0
-		o++
-		buf[o] = 0
-		o++
-		buf[o] = 0
-		o++
-	}
+
+	// extra large header content
+	buf[o] = byte((valueLength & 0xff000000) >> 24)
+	o++
+	buf[o] = 0
+	o++
+	buf[o] = 0
+	o++
+	buf[o] = 0
+	o++
 }
 
 func SetInt(v int, buf []byte, o int) {

@@ -171,9 +171,10 @@ func (s *session) prepareStringCommand(cmd string) []byte {
 	if requiredLength&3 > 0 {
 		requiredLength = (requiredLength & 0xfffffc) + 4
 	}
-	cmdBytes := make([]byte, requiredLength+5)
+	hdrLength := assign.GetHeaderLength(constants.DtString, requiredLength)
+	cmdBytes := make([]byte, requiredLength+1+hdrLength)
 	for i := 0; i < len(rawCmdBytes); i++ {
-		cmdBytes[4+i] = rawCmdBytes[i]
+		cmdBytes[hdrLength+i] = rawCmdBytes[i]
 	}
 	assign.SetHdr(constants.DtString, requiredLength, cmdBytes)
 	return cmdBytes
