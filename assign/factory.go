@@ -15,6 +15,10 @@ func Assign(symbol string, value interface{}) ([]byte, error) {
 		return assignByteArray(symbol, value.([]byte))
 	case string:
 		return assignStr(symbol, value.(string))
+	case int32:
+		return assignInt(symbol, value.(int32))
+	case float64:
+		return assignDouble(symbol, value.(float64))
 	default:
 		return nil, errors.New("session assign: type is not supported")
 	}

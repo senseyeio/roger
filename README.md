@@ -62,8 +62,8 @@ Roger allows variables to be defined within an R session from Go. Currently the 
 
  - string and string arrays
  - byte arrays
- - double arrays
- - int arrays
+ - doubles and double arrays
+ - ints and int arrays
 
 For examples see assignment_test.go.
 
