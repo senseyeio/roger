@@ -5,6 +5,7 @@ type ExpressionType int
 const (
 	XtNull         ExpressionType = 0  /* P data: [0] */
 	XtInt          ExpressionType = 1  /* P data: [4]int */
+	XtDouble       ExpressionType = 2  /* -  data: [8]double */
 	XtString       ExpressionType = 3  /* P data: [n]char null-term. strg. */
 	XtLang         ExpressionType = 4  /* - */
 	XtS4           ExpressionType = 7  /* P data: [0] */

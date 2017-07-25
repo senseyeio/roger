@@ -22,6 +22,14 @@ func TestIntArrayAssignment(t *testing.T) {
 	checkAssignment(t, []int32{1, 2, 3, 4, 5})
 }
 
+func TestIntAssignment(t *testing.T) {
+	checkAssignment(t, int32(100))
+}
+
+func TestDoubleAssignment(t *testing.T) {
+	checkAssignment(t, float64(123.4))
+}
+
 func TestFloatArrayAssignment(t *testing.T) {
 	checkAssignment(t, []float64{1.1, 2.2, 3.3, 4.4, 5.5})
 }
