@@ -19,6 +19,10 @@ type Packet interface {
 
 	// IsError returns a boolean defining whether the Packet contains an error.
 	IsError() bool
+
+	// Returns the packet's error or nil if there is none.
+	GetError() error
+
 	// IsOk returns a boolean defining whether Packet was success
 	IsOk() bool
 }
@@ -52,6 +56,14 @@ func (p *packet) IsOk() bool {
 
 func (p *packet) getStatusCode() int {
 	return p.cmd >> 24 & 127
+}
+
+func (p *packet) GetError() error {
+	if p.IsError() {
+		return p.getError()
+	} else {
+		return nil
+	}
 }
 
 func (p *packet) getError() error {
