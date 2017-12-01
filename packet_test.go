@@ -14,6 +14,22 @@ func TestErrorPacketIsError(t *testing.T) {
 	}
 }
 
+func TestErrorPacketGetErrorNonNil(t *testing.T) {
+	pkt := newErrorPacket(errors.New("test error"))
+	err := pkt.GetError()
+	if err == nil {
+		t.Error("GetError should return a non nil error when the packet has an error")
+	}
+}
+
+func TestErrorPacketGetErrorNil(t *testing.T) {
+	pkt := newErrorPacket(nil)
+	err := pkt.GetError()
+	if err != nil {
+		t.Error("GetError should return nil when the packet has no error")
+	}
+}
+
 func TestErrorPacketResultObject(t *testing.T) {
 	testError := errors.New("test error")
 	pkt := newErrorPacket(testError)
