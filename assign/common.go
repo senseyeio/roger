@@ -28,7 +28,7 @@ func setHdrOffset(valueType constants.DataType, valueLength int, buf []byte, o i
 	o++
 
 	// extra large header content
-	buf[o] = byte((valueLength & 0xff000000) >> 24)
+	buf[o] = byte((int64(valueLength) & 0xff000000) >> 24)
 	o++
 	buf[o] = 0
 	o++
@@ -45,7 +45,7 @@ func SetInt(v int, buf []byte, o int) {
 	o++
 	buf[o] = byte((v & 0xff0000) >> 16)
 	o++
-	buf[o] = byte((v & 0xff000000) >> 24)
+	buf[o] = byte((int64(v) & 0xff000000) >> 24)
 	o++
 }
 
