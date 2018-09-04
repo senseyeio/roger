@@ -149,3 +149,8 @@ func TestLangTag(t *testing.T) {
 	_, err := getResultObject("expression(2^x)")
 	assert.Nil(t, err)
 }
+
+func TestClass(t *testing.T) {
+	_, err := getResultObject("setClass('test_class', slots=c(listslot='list', aslot='apNull', numslot='numeric', chrslot='character'), contains='data.frame'); j <- new('test_class'); d <- j")
+	assert.Nil(t, err)
+}

@@ -10,9 +10,9 @@ func parseVectorAttr(attr interface{}, vectorArr []interface{}, offset int) (int
 	if !ok {
 		return vectorArr, offset, nil
 	}
-	names, ok := attrMap["n"].([]string)
+	names, ok := attrMap["names"].([]string)
 	if !ok {
-		name, ok := attrMap["n"].(string)
+		name, ok := attrMap["names"].(string)
 		if !ok {
 			return nil, offset, errors.New("Vector names not parsed correctly")
 		}

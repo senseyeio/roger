@@ -1,8 +1,8 @@
-FROM r-base:3.2.1
+FROM r-base:3.5.1
 
 RUN apt-get update
 
-RUN apt-get install -y --no-install-recommends \
+RUN apt-get install -y --no-install-recommends\
               libxml2-dev \
               libcurl4-gnutls-dev \
               libssl-dev
